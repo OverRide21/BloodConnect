@@ -78,6 +78,7 @@ function geocodeAddress(address) {
         const geocoder = new google.maps.Geocoder();
         geocoder.geocode({ 'address': address }, (results, status) => {
             if (status === 'OK') {
+                console.log('Geocoding result:', results[0].geometry.location.toString());
                 resolve({
                     lat: results[0].geometry.location.lat(),
                     lng: results[0].geometry.location.lng()
@@ -96,6 +97,29 @@ function saveDonor(donor, form) {
 
     alert('Registration Successful! Thank you for being a hero.');
     form.reset();
+}
+
+// Google Sign-In Callback
+function handleCredentialResponse(response) {
+    // Decode JWT - simple base64 decode (production should use library)
+    const responsePayload = decodeJwtResponse(response.credential);
+
+    console.log("Logged in user: " + responsePayload.name);
+
+    // Auto-fill form
+    document.getElementById('fullName').value = responsePayload.name;
+
+    alert(`Welcome, ${responsePayload.given_name}! We've pre-filled your name.`);
+}
+
+function decodeJwtResponse(token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
 }
 
 function initLocator() {
