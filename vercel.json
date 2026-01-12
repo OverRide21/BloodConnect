@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/register", "destination": "/register.html" },
+    { "source": "/locate", "destination": "/locate.html" }
+  ]
+}

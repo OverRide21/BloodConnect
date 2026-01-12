@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Donors - BloodConnect</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body style="display: flex; flex-direction: column; height: 100vh;">
+
+    <nav class="navbar" style="flex-shrink: 0;">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <i class="fa-solid fa-heart-pulse"></i> BloodConnect
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="register.html" class="nav-link">Donate</a></li>
+                <li><a href="locate.html" class="nav-link active">Find Donors</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="locator-container" style="flex-grow: 1;">
+        <aside class="sidebar">
+            <h2 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Find a Donor</h2>
+
+            <div class="form-group">
+                <label class="form-label" for="bloodGroupFilter">Filter by Blood Group</label>
+                <select id="bloodGroupFilter" class="form-select">
+                    <option value="all">All Groups</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                </select>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 1.5rem 0;">
+
+            <div id="donorsList">
+                <!-- Donors loaded via JS -->
+                <p style="color: #666; font-size: 0.9rem;">Loading donors...</p>
+            </div>
+        </aside>
+
+        <main class="map-container" id="map">
+            <!-- Map loaded via JS -->
+            <div class="map-placeholder">
+                <i class="fa-solid fa-spinner fa-spin"
+                    style="font-size: 3rem; margin-bottom: 1rem; color: var(--primary-red);"></i>
+                <p>Loading Map...</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <!-- REPLACE 'YOUR_GOOGLE_MAPS_API_KEY' WITH YOUR ACTUAL KEY -->
+    <!-- We use the callback=initMap to trigger the JS once loaded -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZsk5JtHQ5_dAI-eGpxXNZzCup2TFKZdM&callback=initMap"></script>
+</body>
+
+</html>
