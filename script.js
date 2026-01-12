@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Navigation active state
     const currentPath = window.location.pathname;
     const navLinks = document.querySelectorAll('.nav-link');
-    
+
     navLinks.forEach(link => {
         if (link.getAttribute('href') === currentPath.split('/').pop()) {
             link.classList.add('active');
@@ -20,13 +20,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function initRegistration() {
+async function initRegistration() {
     console.log('Registration page loaded');
     const form = document.getElementById('registrationForm');
-    
-    form.addEventListener('submit', (e) => {
+
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
+
         // Basic Validation
         const name = document.getElementById('fullName').value;
         const age = document.getElementById('age').value;
@@ -39,32 +39,61 @@ function initRegistration() {
             return;
         }
 
-        // Mock Geocoding (In real app, we'd use GMaps Geocoding API)
-        // Generating random offset near a fixed point for demo purposes if no API
-        const mockLat = 40.7128 + (Math.random() - 0.5) * 0.1;
-        const mockLng = -74.0060 + (Math.random() - 0.5) * 0.1;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = 'Locating...';
+        submitBtn.disabled = true;
 
-        const donor = {
-            id: Date.now(),
-            name,
-            age,
-            bloodGroup,
-            contact,
-            address,
-            // Store coordinates. In a real app we'd await the geocode result
-            lat: mockLat,
-            lng: mockLng
-        };
+        try {
+            const location = await geocodeAddress(address);
 
-        saveDonor(donor);
+            const donor = {
+                id: Date.now(),
+                name,
+                age,
+                bloodGroup,
+                contact,
+                address,
+                lat: location.lat,
+                lng: location.lng
+            };
+
+            saveDonor(donor, form);
+        } catch (error) {
+            console.error(error);
+            alert('Could not find this address. Please try being more specific (e.g. Include city and zip code).');
+        } finally {
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+        }
     });
 }
 
-function saveDonor(donor) {
+function geocodeAddress(address) {
+    return new Promise((resolve, reject) => {
+        if (!window.google || !window.google.maps) {
+            reject('Google Maps API not loaded');
+            return;
+        }
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ 'address': address }, (results, status) => {
+            if (status === 'OK') {
+                resolve({
+                    lat: results[0].geometry.location.lat(),
+                    lng: results[0].geometry.location.lng()
+                });
+            } else {
+                reject('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    });
+}
+
+function saveDonor(donor, form) {
     const donors = JSON.parse(localStorage.getItem('bloodConnectDonors') || '[]');
     donors.push(donor);
     localStorage.setItem('bloodConnectDonors', JSON.stringify(donors));
-    
+
     alert('Registration Successful! Thank you for being a hero.');
     form.reset();
 }
@@ -72,7 +101,7 @@ function saveDonor(donor) {
 function initLocator() {
     console.log('Locator page loaded');
     const filter = document.getElementById('bloodGroupFilter');
-    
+
     filter.addEventListener('change', (e) => {
         const group = e.target.value;
         refreshMapMarkers(group);
@@ -80,13 +109,13 @@ function initLocator() {
 }
 
 // Global scope for Google Maps Callback
-window.initMap = function() {
+window.initMap = function () {
     // Check if we have a real key or if we are just mocking
     const mapElement = document.getElementById('map');
-    
+
     // Default NYC
     const center = { lat: 40.7128, lng: -74.0060 };
-    
+
     let map;
     try {
         map = new google.maps.Map(mapElement, {
@@ -99,12 +128,12 @@ window.initMap = function() {
                 }
             ]
         });
-        
+
         window.mapInstance = map; // Save for later access
         window.markers = [];
-        
+
         refreshMapMarkers('all');
-        
+
     } catch (e) {
         mapElement.innerHTML = `
             <div class="map-placeholder">
@@ -119,13 +148,13 @@ window.initMap = function() {
 
 function refreshMapMarkers(filterGroup) {
     const donors = JSON.parse(localStorage.getItem('bloodConnectDonors') || '[]');
-    
+
     // Clear existing markers
     if (window.markers) {
         window.markers.forEach(m => m.setMap(null));
         window.markers = [];
     }
-    
+
     const donorsList = document.getElementById('donorsList');
     donorsList.innerHTML = ''; // Clear sidebar list
 
