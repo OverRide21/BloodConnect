@@ -31,7 +31,7 @@ async function initRegistration() {
     function initializeGoogleSignIn() {
         if (window.google && window.google.accounts) {
             window.google.accounts.id.initialize({
-                client_id: '983746584602-386n53g0jts7ok670dkdvpe0m8t4rtm1.apps.googleusercontent.com',
+                client_id: '983746584602-e7fga6h7e802o6qrmpbleech13cl494e.apps.googleusercontent.com',
                 callback: handleCredentialResponse
             });
             
