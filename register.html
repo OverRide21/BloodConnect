@@ -30,7 +30,21 @@
             <h2 class="section-title">Donor Registration</h2>
             <p class="section-subtitle" style="margin-bottom: 2rem;">Join our community of life savers.</p>
 
-            <form id="registrationForm">
+            <!-- Google Sign-In Section -->
+            <div id="googleSignInSection" style="text-align: center; margin-bottom: 2rem; padding: 2rem; background: #f9fafb; border-radius: var(--radius-lg);">
+                <h3 style="margin-bottom: 1rem; color: var(--text-dark);">Step 1: Sign in with Google</h3>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem; font-size: 0.9rem;">You must sign in with Google to register as a donor</p>
+                <div id="googleSignInButton" style="display: inline-block;"></div>
+            </div>
+
+            <!-- User Info Display (shown after login) -->
+            <div id="userInfoSection" style="display: none; margin-bottom: 2rem; padding: 1rem; background: #e8f5e9; border-radius: var(--radius-md); border-left: 4px solid #4caf50;">
+                <p style="color: #2e7d32; font-weight: 500;">
+                    <i class="fa-solid fa-check-circle"></i> Signed in as: <span id="userNameDisplay"></span>
+                </p>
+            </div>
+
+            <form id="registrationForm" style="display: none;">
                 <div class="form-group">
                     <label class="form-label" for="fullName">Full Name</label>
                     <input type="text" id="fullName" class="form-input" placeholder="e.g. John Doe" required>
@@ -66,10 +80,15 @@
                     <label class="form-label" for="address">Location Address</label>
                     <input type="text" id="address" class="form-input" placeholder="e.g. 123 Main St, New York, NY"
                         required>
+                    <button type="button" id="getLocationBtn" class="btn btn-outline" style="width: 100%; margin-top: 0.5rem;">
+                        <i class="fa-solid fa-location-crosshairs"></i> Use My Current Location
+                    </button>
                     <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem;">
                         <i class="fa-solid fa-lock"></i> Your exact address will not be shown publicly to recipients.
                         They will only see an approximate location.
                     </p>
+                    <input type="hidden" id="latitude">
+                    <input type="hidden" id="longitude">
                 </div>
 
                 <button type="submit" class="btn btn-primary" style="width: 100%;">Register as Donor</button>
@@ -104,10 +123,10 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZsk5JtHQ5_dAI-eGpxXNZzCup2TFKZdM&libraries=places"></script>
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBDHEpxyawPWu88TqqfER5OUWfcy0JSns&libraries=places"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>

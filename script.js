@@ -20,12 +20,54 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Global variable to store Google user info
+let googleUser = null;
+
 async function initRegistration() {
     console.log('Registration page loaded');
     const form = document.getElementById('registrationForm');
 
+    // Initialize Google Sign-In when Google API is loaded
+    function initializeGoogleSignIn() {
+        if (window.google && window.google.accounts) {
+            window.google.accounts.id.initialize({
+                client_id: '983746584602-s36hd31mqdu3de0pbt6ipfnt3nt3niu8.apps.googleusercontent.com',
+                callback: handleCredentialResponse
+            });
+            
+            const buttonContainer = document.getElementById('googleSignInButton');
+            if (buttonContainer) {
+                window.google.accounts.id.renderButton(buttonContainer, {
+                    theme: 'outline',
+                    size: 'large',
+                    text: 'sign_in_with',
+                    shape: 'rectangular',
+                    logo_alignment: 'left'
+                });
+            }
+        } else {
+            // Retry after a short delay if Google API not loaded yet
+            setTimeout(initializeGoogleSignIn, 100);
+        }
+    }
+
+    // Start initialization
+    initializeGoogleSignIn();
+
+    // Get current location button
+    const getLocationBtn = document.getElementById('getLocationBtn');
+    if (getLocationBtn) {
+        getLocationBtn.addEventListener('click', getCurrentLocation);
+    }
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        // Check if user is logged in with Google
+        if (!googleUser) {
+            alert('Please sign in with Google first to register as a donor.');
+            return;
+        }
 
         // Basic Validation
         const name = document.getElementById('fullName').value;
@@ -33,35 +75,55 @@ async function initRegistration() {
         const bloodGroup = document.getElementById('bloodGroup').value;
         const contact = document.getElementById('contact').value;
         const address = document.getElementById('address').value;
+        const lat = document.getElementById('latitude').value;
+        const lng = document.getElementById('longitude').value;
 
         if (!name || !age || !bloodGroup || !contact || !address) {
             alert('Please fill in all fields');
             return;
         }
 
+        // Check if we have precise location
+        if (!lat || !lng) {
+            alert('Please provide your location. Click "Use My Current Location" or enter a valid address.');
+            return;
+        }
+
         const submitBtn = form.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerText;
-        submitBtn.innerText = 'Locating...';
+        submitBtn.innerText = 'Registering...';
         submitBtn.disabled = true;
 
         try {
-            const location = await geocodeAddress(address);
+            // Use precise location if available, otherwise geocode address
+            let finalLat = parseFloat(lat);
+            let finalLng = parseFloat(lng);
+
+            // If location wasn't set via geolocation, try geocoding
+            if (!finalLat || !finalLng) {
+                const location = await geocodeAddress(address);
+                finalLat = location.lat;
+                finalLng = location.lng;
+            }
 
             const donor = {
                 id: Date.now(),
+                googleId: googleUser.sub,
+                googleEmail: googleUser.email,
                 name,
                 age,
                 bloodGroup,
                 contact,
                 address,
-                lat: location.lat,
-                lng: location.lng
+                lat: finalLat,
+                lng: finalLng,
+                registeredAt: new Date().toISOString()
             };
 
             saveDonor(donor, form);
         } catch (error) {
             console.error(error);
-            alert('Could not find this address. Please try being more specific (e.g. Include city and zip code).');
+            alert('Could not process your registration. Please try again.');
         } finally {
             submitBtn.innerText = originalText;
             submitBtn.disabled = false;
@@ -106,10 +168,30 @@ function handleCredentialResponse(response) {
 
     console.log("Logged in user: " + responsePayload.name);
 
-    // Auto-fill form
-    document.getElementById('fullName').value = responsePayload.name;
+    // Store Google user info globally
+    googleUser = responsePayload;
 
-    alert(`Welcome, ${responsePayload.given_name}! We've pre-filled your name.`);
+    // Hide Google Sign-In section and show user info
+    const signInSection = document.getElementById('googleSignInSection');
+    const userInfoSection = document.getElementById('userInfoSection');
+    const userNameDisplay = document.getElementById('userNameDisplay');
+    const form = document.getElementById('registrationForm');
+
+    if (signInSection) signInSection.style.display = 'none';
+    if (userInfoSection) {
+        userInfoSection.style.display = 'block';
+        userNameDisplay.textContent = responsePayload.name;
+    }
+    if (form) form.style.display = 'block';
+
+    // Auto-fill form with Google data
+    const fullNameInput = document.getElementById('fullName');
+    if (fullNameInput) {
+        fullNameInput.value = responsePayload.name;
+    }
+
+    // Get precise location automatically after login
+    getCurrentLocation();
 }
 
 function decodeJwtResponse(token) {
@@ -120,6 +202,114 @@ function decodeJwtResponse(token) {
     }).join(''));
 
     return JSON.parse(jsonPayload);
+}
+
+// Get user's precise location using Geolocation API
+function getCurrentLocation() {
+    const getLocationBtn = document.getElementById('getLocationBtn');
+    const addressInput = document.getElementById('address');
+    const latInput = document.getElementById('latitude');
+    const lngInput = document.getElementById('longitude');
+
+    if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser. Please enter your address manually.');
+        return;
+    }
+
+    if (getLocationBtn) {
+        const originalText = getLocationBtn.innerHTML;
+        getLocationBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Getting Location...';
+        getLocationBtn.disabled = true;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+            const accuracy = position.coords.accuracy; // in meters
+
+            console.log(`Location obtained: ${lat}, ${lng} (accuracy: ${accuracy}m)`);
+
+            // Store precise coordinates
+            if (latInput) latInput.value = lat;
+            if (lngInput) lngInput.value = lng;
+
+            // Reverse geocode to get address
+            try {
+                const address = await reverseGeocode(lat, lng);
+                if (addressInput) {
+                    addressInput.value = address;
+                }
+            } catch (error) {
+                console.error('Reverse geocoding failed:', error);
+                if (addressInput) {
+                    addressInput.placeholder = `Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                }
+            }
+
+            if (getLocationBtn) {
+                getLocationBtn.innerHTML = '<i class="fa-solid fa-check-circle"></i> Location Captured';
+                getLocationBtn.style.background = '#4caf50';
+                getLocationBtn.style.borderColor = '#4caf50';
+                getLocationBtn.style.color = 'white';
+                setTimeout(() => {
+                    getLocationBtn.innerHTML = originalText;
+                    getLocationBtn.style.background = '';
+                    getLocationBtn.style.borderColor = '';
+                    getLocationBtn.style.color = '';
+                    getLocationBtn.disabled = false;
+                }, 2000);
+            }
+
+            alert(`Location captured successfully! Accuracy: ${Math.round(accuracy)} meters.`);
+        },
+        (error) => {
+            console.error('Geolocation error:', error);
+            let errorMessage = 'Unable to get your location. ';
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage += 'Please allow location access and try again.';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage += 'Location information is unavailable.';
+                    break;
+                case error.TIMEOUT:
+                    errorMessage += 'Location request timed out.';
+                    break;
+                default:
+                    errorMessage += 'An unknown error occurred.';
+                    break;
+            }
+            alert(errorMessage);
+            if (getLocationBtn) {
+                getLocationBtn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> Use My Current Location';
+                getLocationBtn.disabled = false;
+            }
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+}
+
+// Reverse geocode coordinates to address
+function reverseGeocode(lat, lng) {
+    return new Promise((resolve, reject) => {
+        if (!window.google || !window.google.maps) {
+            reject('Google Maps API not loaded');
+            return;
+        }
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+                resolve(results[0].formatted_address);
+            } else {
+                reject('Reverse geocode was not successful: ' + status);
+            }
+        });
+    });
 }
 
 function initLocator() {

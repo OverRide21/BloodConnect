@@ -3,7 +3,8 @@
 A responsive website connecting blood donors with recipients.
 
 ## Features
-- **Donor Registration**: Sign up to be a donor.
+- **Donor Registration**: Sign up to be a donor with compulsory Google Sign-In.
+- **Precise Location**: Automatic GPS location capture for accurate donor mapping.
 - **Locator**: Find donors on an interactive Google Map.
 - **Clean Interface**: Medical-grade aesthetic with responsive design.
 
@@ -17,8 +18,18 @@ A responsive website connecting blood donors with recipients.
 ## Local Development
 
 1. **Clone or Download** the repository.
-2. Open `index.html` in your browser.
-3. For the map to work, ensure you have a valid Google Maps API Key in `locate.html`.
+2. **Configure Google Sign-In**:
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+   - Enable "Google Sign-In API" (Identity Platform)
+   - Create OAuth 2.0 credentials (Web application)
+   - Add your domain to authorized JavaScript origins
+   - Copy your Client ID
+   - Replace `YOUR_GOOGLE_CLIENT_ID` in `register.html` (line 108) and `script.js` (line 30) with your actual Client ID
+3. **Configure Google Maps API**:
+   - Enable "Maps JavaScript API" and "Geocoding API" in Google Cloud Console
+   - Replace the Google Maps API key in `register.html` and `locate.html` with your actual API key
+4. Open `index.html` in your browser.
 
 ## Deployment on Vercel
 
