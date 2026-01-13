@@ -74,14 +74,21 @@ async function initRegistration() {
         const age = document.getElementById('age').value;
         const bloodGroup = document.getElementById('bloodGroup').value;
         const contact = document.getElementById('contact').value;
-        const address = document.getElementById('address').value;
+        const street = document.getElementById('street').value;
+        const city = document.getElementById('city').value;
+        const state = document.getElementById('state').value;
+        const zipCode = document.getElementById('zipCode').value;
+        const country = document.getElementById('country').value;
         const lat = document.getElementById('latitude').value;
         const lng = document.getElementById('longitude').value;
 
-        if (!name || !age || !bloodGroup || !contact || !address) {
+        if (!name || !age || !bloodGroup || !contact || !street || !city || !state || !zipCode || !country) {
             alert('Please fill in all fields');
             return;
         }
+
+        // Combine address parts for geocoding
+        const fullAddress = `${street}, ${city}, ${state} ${zipCode}, ${country}`;
 
         // Check if we have precise location
         if (!lat || !lng) {
@@ -101,7 +108,7 @@ async function initRegistration() {
 
             // If location wasn't set via geolocation, try geocoding
             if (!finalLat || !finalLng) {
-                const location = await geocodeAddress(address);
+                const location = await geocodeAddress(fullAddress);
                 finalLat = location.lat;
                 finalLng = location.lng;
             }
@@ -114,7 +121,14 @@ async function initRegistration() {
                 age,
                 bloodGroup,
                 contact,
-                address,
+                address: {
+                    street,
+                    city,
+                    state,
+                    zipCode,
+                    country,
+                    full: fullAddress
+                },
                 lat: finalLat,
                 lng: finalLng,
                 registeredAt: new Date().toISOString()
@@ -207,7 +221,11 @@ function decodeJwtResponse(token) {
 // Get user's precise location using Geolocation API
 function getCurrentLocation() {
     const getLocationBtn = document.getElementById('getLocationBtn');
-    const addressInput = document.getElementById('address');
+    const streetInput = document.getElementById('street');
+    const cityInput = document.getElementById('city');
+    const stateInput = document.getElementById('state');
+    const zipCodeInput = document.getElementById('zipCode');
+    const countryInput = document.getElementById('country');
     const latInput = document.getElementById('latitude');
     const lngInput = document.getElementById('longitude');
 
@@ -234,17 +252,16 @@ function getCurrentLocation() {
             if (latInput) latInput.value = lat;
             if (lngInput) lngInput.value = lng;
 
-            // Reverse geocode to get address
+            // Reverse geocode to get address components
             try {
-                const address = await reverseGeocode(lat, lng);
-                if (addressInput) {
-                    addressInput.value = address;
-                }
+                const addressComponents = await reverseGeocode(lat, lng);
+                if (streetInput) streetInput.value = addressComponents.street || '';
+                if (cityInput) cityInput.value = addressComponents.city || '';
+                if (stateInput) stateInput.value = addressComponents.state || '';
+                if (zipCodeInput) zipCodeInput.value = addressComponents.zipCode || '';
+                if (countryInput) countryInput.value = addressComponents.country || '';
             } catch (error) {
                 console.error('Reverse geocoding failed:', error);
-                if (addressInput) {
-                    addressInput.placeholder = `Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-                }
             }
 
             if (getLocationBtn) {
@@ -294,7 +311,7 @@ function getCurrentLocation() {
     );
 }
 
-// Reverse geocode coordinates to address
+// Reverse geocode coordinates to address components
 function reverseGeocode(lat, lng) {
     return new Promise((resolve, reject) => {
         if (!window.google || !window.google.maps) {
@@ -304,7 +321,46 @@ function reverseGeocode(lat, lng) {
         const geocoder = new google.maps.Geocoder();
         geocoder.geocode({ location: { lat, lng } }, (results, status) => {
             if (status === 'OK' && results[0]) {
-                resolve(results[0].formatted_address);
+                const addressComponents = results[0].address_components;
+                const formattedAddress = results[0].formatted_address;
+                
+                // Parse address components
+                let street = '';
+                let city = '';
+                let state = '';
+                let zipCode = '';
+                let country = '';
+                
+                addressComponents.forEach(component => {
+                    const types = component.types;
+                    
+                    if (types.includes('street_number') || types.includes('route')) {
+                        street = (street + ' ' + component.long_name).trim();
+                    }
+                    if (types.includes('locality')) {
+                        city = component.long_name;
+                    } else if (types.includes('administrative_area_level_2') && !city) {
+                        city = component.long_name;
+                    }
+                    if (types.includes('administrative_area_level_1')) {
+                        state = component.short_name;
+                    }
+                    if (types.includes('postal_code')) {
+                        zipCode = component.long_name;
+                    }
+                    if (types.includes('country')) {
+                        country = component.long_name;
+                    }
+                });
+                
+                resolve({
+                    street: street || '',
+                    city: city || '',
+                    state: state || '',
+                    zipCode: zipCode || '',
+                    country: country || '',
+                    full: formattedAddress
+                });
             } else {
                 reject('Reverse geocode was not successful: ' + status);
             }
@@ -360,6 +416,26 @@ window.initMap = function () {
     }
 };
 
+// Helper function to format address (handles both old string format and new object format)
+function formatAddress(address) {
+    if (typeof address === 'string') {
+        // Old format - return as is
+        return address;
+    } else if (typeof address === 'object' && address !== null) {
+        // New format - combine address parts
+        const parts = [];
+        if (address.street) parts.push(address.street);
+        if (address.city) parts.push(address.city);
+        if (address.state) parts.push(address.state);
+        if (address.zipCode) parts.push(address.zipCode);
+        if (address.country) parts.push(address.country);
+        
+        // If we have a full address, use it; otherwise combine parts
+        return address.full || parts.join(', ') || 'Address not available';
+    }
+    return 'Address not available';
+}
+
 function refreshMapMarkers(filterGroup) {
     const donors = JSON.parse(localStorage.getItem('bloodConnectDonors') || '[]');
 
@@ -375,13 +451,15 @@ function refreshMapMarkers(filterGroup) {
     donors.forEach(donor => {
         if (filterGroup !== 'all' && donor.bloodGroup !== filterGroup) return;
 
+        const formattedAddress = formatAddress(donor.address);
+
         // Add to Sidebar
         const card = document.createElement('div');
         card.className = 'donor-card';
         card.innerHTML = `
             <h4 style="color: var(--primary-red); margin-bottom: 0.25rem;">${donor.bloodGroup} Donor</h4>
             <p><strong>Age:</strong> ${donor.age}</p>
-            <p><i class="fa-solid fa-location-dot"></i> ${donor.address}</p>
+            <p><i class="fa-solid fa-location-dot"></i> ${formattedAddress}</p>
         `;
         donorsList.appendChild(card);
 
@@ -398,7 +476,7 @@ function refreshMapMarkers(filterGroup) {
                 content: `
                     <div style="padding: 0.5rem;">
                         <h3 style="color: #FF3D3D; margin-bottom: 0.5rem;">${donor.bloodGroup}</h3>
-                        <p><strong>Approx. Location:</strong> ${donor.address}</p>
+                        <p><strong>Approx. Location:</strong> ${formattedAddress}</p>
                         <button onclick="alert('Contact: ${donor.contact}')" 
                                 style="background: #FF3D3D; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; margin-top: 0.5rem; cursor: pointer;">
                             Connect
