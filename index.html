@@ -1,123 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BloodConnect - Save a Life Today</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
 
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container nav-container">
+    <!-- Floating Navbar -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
             <a href="index.html" class="logo">
-                <i class="fa-solid fa-heart-pulse"></i> BloodConnect
+                <img src="BloodConnectLogo.jpeg" alt="BloodConnect Logo"> BloodConnect
             </a>
             <ul class="nav-links">
                 <li><a href="index.html" class="nav-link active">Home</a></li>
                 <li><a href="register.html" class="nav-link">Donate</a></li>
                 <li><a href="locate.html" class="nav-link">Find Donors</a></li>
+                <li><a href="founders.html" class="nav-link">Founders</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Full Screen Hero -->
     <header class="hero">
         <div class="container">
-            <div class="hero-content">
-                <h1>Your Blood Can Be A Lifeline.</h1>
-                <p>Connect with those in critical need. Join our community of heroes and save lives in your local area today.</p>
-                <div style="display: flex; gap: 1rem;">
-                    <a href="register.html" class="btn btn-primary">Become a Donor</a>
-                    <a href="locate.html" class="btn btn-outline">Find a Donor</a>
+            <div class="hero-grid">
+                <div class="hero-content reveal-left">
+                    <span
+                        style="color: var(--primary); font-weight: 600; font-family: var(--font-heading); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 1rem; display: block;">Emergency
+                        Relief</span>
+                    <h1>Your Blood.<br>Someone's Lifeline.</h1>
+                    <p>Connect instantly with those in critical need. Join our community of modern heroes saving lives
+                        with just one tap.</p>
+                    <div style="display: flex; gap: 1rem;">
+                        <a href="register.html" class="btn btn-primary">
+                            Become a Donor <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                        <a href="locate.html" class="btn btn-outline">Find Donor</a>
+                    </div>
+                </div>
+
+                <div class="hero-image reveal-right">
+                    <!-- Placeholder for Hackathon Demo -->
+                    <img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
+                        alt="Blood Donation Concept">
+
+                    <!-- Floating Stats -->
+                    <div class="hero-stat stat-1">
+                        <div class="stat-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <div>
+                            <div style="font-weight: 800; color: var(--dark);">12k+</div>
+                            <div style="font-size: 0.8rem; color: var(--gray-light);">Donors</div>
+                        </div>
+                    </div>
+
+                    <div class="hero-stat stat-2">
+                        <div class="stat-icon"><i class="fa-solid fa-location-dot"></i></div>
+                        <div>
+                            <div style="font-weight: 800; color: var(--dark);">Live</div>
+                            <div style="font-size: 0.8rem; color: var(--gray-light);">Tracking</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- How It Works -->
+    <!-- Bento Grid Features -->
     <section class="features">
         <div class="container">
-            <h2 class="section-title">How It Works</h2>
-            <p class="section-subtitle">A simple, transparent process to connect donors with recipients efficiently.</p>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fa-solid fa-user-plus"></i>
-                    </div>
-                    <h3>1. Register</h3>
-                    <p>Sign up as a donor in less than 2 minutes. Your privacy is our priority.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fa-solid fa-map-location-dot"></i>
-                    </div>
-                    <h3>2. Locate</h3>
-                    <p>Recipients can use our interactive map to find diverse blood groups nearby.</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fa-solid fa-hand-holding-heart"></i>
-                    </div>
-                    <h3>3. Connect</h3>
-                    <p>Directly contact donors securely and arrange the life-saving donation.</p>
-                </div>
+            <div class="reveal">
+                <h2 class="section-title">How It Works</h2>
+                <p style="text-align: center; color: var(--gray-light);">Seamlessly connecting heroes with those in
+                    need.</p>
             </div>
-        </div>
-    </section>
 
-    <!-- Stats -->
-    <section class="stats">
-        <div class="container">
-            <div class="stats-grid">
-                <div>
-                    <div class="stat-number">12k+</div>
-                    <p>Registered Donors</p>
+            <div class="bento-grid">
+                <div class="bento-item large reveal">
+                    <div class="bento-icon"><i class="fa-solid fa-user-plus"></i></div>
+                    <h3>Instant Registration</h3>
+                    <p>Sign up in seconds using your Google account. Secure, fast, and privacy-focused.</p>
                 </div>
-                <div>
-                    <div class="stat-number">8.5k</div>
-                    <p>Lives Saved</p>
+
+                <div class="bento-item tall reveal">
+                    <div class="bento-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <h3>Real-time Locator</h3>
+                    <p>Our advanced map interface shows donors in real-time near your location. Filter by blood group
+                        and connect instantly.</p>
                 </div>
-                <div>
-                    <div class="stat-number">150+</div>
-                    <p>Cities Covered</p>
+
+                <div class="bento-item reveal">
+                    <div class="bento-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3>Privacy First</h3>
+                    <p>Your exact location is masked. Only approximate distance is shown.</p>
+                </div>
+
+                <div class="bento-item reveal">
+                    <div class="bento-icon"><i class="fa-solid fa-comments"></i></div>
+                    <h3>Direct Connect</h3>
+                    <p>Call donors directly from the platform.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer class="footer reveal">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-col">
-                    <h3>BloodConnect</h3>
-                    <p>Bridging the gap between donors and those in need. Every drop counts.</p>
+                <div>
+                    <h3 style="color: white; margin-bottom: 1rem;">BloodConnect</h3>
+                    <p style="color: var(--gray-light);">Bridging the gap between donors and those in need. Every drop
+                        counts.</p>
                 </div>
-                <div class="footer-col">
-                    <h3>Quick Links</h3>
+                <div>
+                    <h4 style="color: white; margin-bottom: 1rem;">Quick Links</h4>
                     <ul style="display: flex; flex-direction: column; gap: 0.5rem;">
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="register.html">Donate</a></li>
-                        <li><a href="locate.html">Find Donors</a></li>
+                        <li><a href="index.html" style="color: var(--gray-light);">Home</a></li>
+                        <li><a href="register.html" style="color: var(--gray-light);">Donate</a></li>
+                        <li><a href="locate.html" style="color: var(--gray-light);">Find Donors</a></li>
                     </ul>
                 </div>
-                <div class="footer-col">
-                    <h3>Contact</h3>
-                    <p>support@bloodconnect.com</p>
-                    <p>+1 (555) 123-4567</p>
-                </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 BloodConnect. All rights reserved.</p>
+            <div
+                style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 3rem; padding-top: 2rem; text-align: center; color: var(--gray-light);">
+                <p>&copy; 2026 BloodConnect.</p>
             </div>
         </div>
     </footer>
 
     <script src="script.js"></script>
 </body>
+
 </html>
