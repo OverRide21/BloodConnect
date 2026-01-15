@@ -18,6 +18,31 @@ document.addEventListener('DOMContentLoaded', () => {
         // Map init is handled by Google Maps callback, but we can setup filters here
         initLocator();
     }
+
+    // Scroll Animations (Hackathon Redesign)
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('active');
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach((el) => {
+        observer.observe(el);
+    });
+
+    // Navbar Scroll Effect
+    const navbar = document.getElementById('navbar');
+    if (navbar) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    }
 });
 
 // Global variable to store Google user info
@@ -34,7 +59,7 @@ async function initRegistration() {
                 client_id: '983746584602-386n53g0jts7ok670dkdvpe0m8t4rtm1.apps.googleusercontent.com',
                 callback: handleCredentialResponse
             });
-            
+
             const buttonContainer = document.getElementById('googleSignInButton');
             if (buttonContainer) {
                 window.google.accounts.id.renderButton(buttonContainer, {
