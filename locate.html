@@ -62,11 +62,12 @@
         </main>
     </div>
 
-    <script src="script.js"></script>
-    <!-- REPLACE 'YOUR_GOOGLE_MAPS_API_KEY' WITH YOUR ACTUAL KEY -->
-    <!-- We use the callback=initMap to trigger the JS once loaded -->
+    <!-- Load Google Maps API first with callback -->
     <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCZsk5JtHQ5_dAI-eGpxXNZzCup2TFKZdM&callback=initMap"></script>
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBBDHEpxyawPWu88TqqfER5OUWfcy0JSns&libraries=places&callback=initMap"
+        onerror="console.error('Failed to load Google Maps API'); document.getElementById('map').innerHTML='<div class=\'map-placeholder\'><i class=\'fa-solid fa-exclamation-triangle\' style=\'font-size: 3rem; margin-bottom: 1rem; color: #f44336;\'></i><h3>Failed to Load Map</h3><p>Please check your internet connection and refresh the page.</p><button onclick=\'location.reload()\' style=\'background: #f44336; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; margin-top: 1rem;\'>Refresh Page</button></div>';">
+    </script>
+    <script src="script.js"></script>
 </body>
 
 </html>
