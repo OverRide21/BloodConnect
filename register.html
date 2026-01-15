@@ -15,12 +15,14 @@
     <nav class="navbar">
         <div class="container nav-container">
             <a href="index.html" class="logo">
-                <i class="fa-solid fa-heart-pulse"></i> BloodConnect
+                <img src="BloodConnectLogo.jpeg" alt="BloodConnect Logo"> BloodConnect
             </a>
             <ul class="nav-links">
                 <li><a href="index.html" class="nav-link">Home</a></li>
                 <li><a href="register.html" class="nav-link active">Donate</a></li>
                 <li><a href="locate.html" class="nav-link">Find Donors</a></li>
+                <li><a href="founders.html" class="nav-link">Founders</a></li>
+                <li><a href="contact.html" class="nav-link">Contact</a></li>
             </ul>
         </div>
     </nav>
@@ -31,14 +33,17 @@
             <p class="section-subtitle" style="margin-bottom: 2rem;">Join our community of life savers.</p>
 
             <!-- Google Sign-In Section -->
-            <div id="googleSignInSection" style="text-align: center; margin-bottom: 2rem; padding: 2rem; background: #f9fafb; border-radius: var(--radius-lg);">
+            <div id="googleSignInSection"
+                style="text-align: center; margin-bottom: 2rem; padding: 2rem; background: #f9fafb; border-radius: var(--radius-lg);">
                 <h3 style="margin-bottom: 1rem; color: var(--text-dark);">Step 1: Sign in with Google</h3>
-                <p style="color: var(--text-light); margin-bottom: 1.5rem; font-size: 0.9rem;">You must sign in with Google to register as a donor</p>
+                <p style="color: var(--text-light); margin-bottom: 1.5rem; font-size: 0.9rem;">You must sign in with
+                    Google to register as a donor</p>
                 <div id="googleSignInButton" style="display: inline-block;"></div>
             </div>
 
             <!-- User Info Display (shown after login) -->
-            <div id="userInfoSection" style="display: none; margin-bottom: 2rem; padding: 1rem; background: #e8f5e9; border-radius: var(--radius-md); border-left: 4px solid #4caf50;">
+            <div id="userInfoSection"
+                style="display: none; margin-bottom: 2rem; padding: 1rem; background: #e8f5e9; border-radius: var(--radius-md); border-left: 4px solid #4caf50;">
                 <p style="color: #2e7d32; font-weight: 500;">
                     <i class="fa-solid fa-check-circle"></i> Signed in as: <span id="userNameDisplay"></span>
                 </p>
@@ -80,7 +85,8 @@
                     <label class="form-label" for="address">Location Address</label>
                     <input type="text" id="address" class="form-input" placeholder="e.g. 123 Main St, New York, NY"
                         required>
-                    <button type="button" id="getLocationBtn" class="btn btn-outline" style="width: 100%; margin-top: 0.5rem;">
+                    <button type="button" id="getLocationBtn" class="btn btn-outline"
+                        style="width: 100%; margin-top: 0.5rem;">
                         <i class="fa-solid fa-location-crosshairs"></i> Use My Current Location
                     </button>
                     <p style="font-size: 0.8rem; color: #888; margin-top: 0.5rem;">
